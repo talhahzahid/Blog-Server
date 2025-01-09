@@ -1,8 +1,22 @@
 import users from "../models/user.models.js";
-import { v2 as cloudinary } from 'cloudinary';
 import dotenv from "dotenv";
 dotenv.config()
+import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+
+const generateAccessToken = (user) => {
+    return jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN,
+        { expiresIn: '2h' }
+    );
+};
+const generateRefreshToken = (user) => {
+    return jwt.sign({ email: user.email }, process.env.REFRESH_TOKEN,
+        { expiresIn: '7d' }
+    );
+};
+
 
 const uploadImageToCloudinary = async (localpath) => {
     console.log('Uploading image from path:', localpath);
@@ -12,18 +26,14 @@ const uploadImageToCloudinary = async (localpath) => {
         api_secret: process.env.API_SECRET,
         secure: true,
     });
-
     try {
         const uploadResult = await cloudinary.uploader.upload(localpath, {
             resource_type: "auto",
         });
-        // console.log('Cloudinary upload result:', uploadResult);
-        // Remove the file after successful upload
         fs.unlinkSync(localpath);
         return uploadResult.url;
     } catch (error) {
         console.error('Cloudinary upload error:', error);
-        // Cleanup even if upload fails
         if (fs.existsSync(localpath)) {
             fs.unlinkSync(localpath);
         }
@@ -41,7 +51,7 @@ const signUp = async (req, res) => {
 
     try {
         const user = await users.findOne({ email })
-        if(user) return res.status(400).json({message:"User already registered"})
+        if (user) return res.status(400).json({ message: "User already registered" })
         const imageUrl = await uploadImageToCloudinary(req.file.path);
         console.log(imageUrl, "image again");
         const userInfo = await users.create({
@@ -58,4 +68,24 @@ const signUp = async (req, res) => {
     }
 };
 
-export { signUp };
+// signIn
+
+const signIn = async (req, res) => {
+    const { email, password } = req.body
+    if (!email) return res.status(400).json({ message: "email is required" })
+    if (!password) return res.status(400).json({ message: "password is required" })
+    try {
+        const user = await users.findOne({ email })
+        if (!user) return res.status(400).json({ message: "no user found try to use different email" })
+        const validPassword = await bcrypt.compare(user.password, password)
+        if (!validPassword) return res.status(400).json({ message: "incorrect password" })
+        const refreshToken = generateRefreshToken(user)
+        const accessToken = generateAccessToken(user)
+        res.cookie("refresh", refreshToken, { httpOnly: true, secure: true, sameSite: "None" })
+        res.status(200).json({ message: "login Successfully" })
+    } catch (error) {
+        res.status(400).json({ message: "error ocuured", error })
+    }
+}
+
+export { signUp, signIn };
