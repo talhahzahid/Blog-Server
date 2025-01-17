@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import Users from "../models/user.models.js"
 const blogSchema = mongoose.Schema({
-    userId: {
+    userRef: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Users"
     },
@@ -15,6 +15,10 @@ const blogSchema = mongoose.Schema({
         type: String,
         required: [true, "description is required"]
     },
-})
+    like: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users"
+    }]
+}, { timestamps: true })
 
 export default mongoose.model("Blogs", blogSchema)

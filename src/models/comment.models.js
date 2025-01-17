@@ -11,10 +11,13 @@ const userComment = mongoose.Schema({
         ref: "Users"
     },
     blogId: {
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blogs"
     },
     comment: {
         type: String,
         required: true,
     },
 })
+
+export default mongoose.model("Comments")
