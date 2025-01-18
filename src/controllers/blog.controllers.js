@@ -8,7 +8,7 @@ const addBlog = async (req, res) => {
     const { title, description, userRef } = req.body;
     if (!title) return res.status(400).json({ message: "title is required" })
     if (!description) return res.status(400).json({ message: "description is required" })
-    if (!req.user) return res.status(400).json({ message: "user unauthorize" })
+    // if (!req.user) return res.status(400).json({ message: "user unauthorize" })
     try {
         // const userRef = req.user
         // if (!userRef) return res.status(400).json({ message: "login first" })
