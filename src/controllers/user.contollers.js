@@ -42,9 +42,8 @@ const uploadImageToCloudinary = async (localpath) => {
 }
 
 const signUp = async (req, res) => {
-    const { fullname, email, password } = req.body;
-
-    if (!fullname) return res.status(400).json({ message: "Fullname is required" });
+    const { username, email, password } = req.body;
+    if (!username) return res.status(400).json({ message: "username is required" });
     if (!email) return res.status(400).json({ message: "Email is required" });
     if (!password) return res.status(400).json({ message: "Password is required" });
     if (!req.file) return res.status(400).json({ message: "Image is required" });
@@ -55,7 +54,7 @@ const signUp = async (req, res) => {
         const imageUrl = await uploadImageToCloudinary(req.file.path);
         console.log(imageUrl, "image again");
         const userInfo = await users.create({
-            fullname,
+            username,
             email,
             password,
             imageUrl,
@@ -81,8 +80,13 @@ const signIn = async (req, res) => {
         if (!validPassword) return res.status(400).json({ message: "incorrect password" })
         const refreshToken = generateRefreshToken(user)
         const accessToken = generateAccessToken(user)
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "None" })
-        res.status(200).json({ message: "login successfully", refreshToken, accessToken })
+        // res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "None" })
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+        });
+        res.status(200).json({ message: "login successfully", refreshToken })
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "An error occurred" });

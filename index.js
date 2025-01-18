@@ -7,11 +7,17 @@ dotenv.config()
 const app = express()
 const port = process.env.port
 import userRoutes from "./src/routes/user.routes.js"
-app.use(cors())
+import router from "./src/routes/blog.routes.js"
+const corsOptions = {
+    origin: "http://localhost:5173",
+    credentials: true,
+};
+app.use(cors(corsOptions))
 app.use(urlencoded({ extended: false }))
 app.use(express.json())
 app.use(cookieParser())
 app.use('/user', userRoutes)
+app.use('/api/v1', router)
 app.get('/', (req, res) => {
     res.send("Blogging App Server")
 })
