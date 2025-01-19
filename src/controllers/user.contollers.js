@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 
 const generateAccessToken = (user) => {
     return jwt.sign({ email: user.email  }, process.env.ACCESS_TOKEN,
-        { expiresIn: '2h' }
+        { expiresIn: '2m' }
     );
 };
 const generateRefreshToken = (user) => {
