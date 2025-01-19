@@ -19,6 +19,35 @@ const addBlog = async (req, res) => {
     }
 }
 
+const singleUser = async (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "user unauthorize" })
+    try {
+        const { _id } = req.user
+        if (!_id) return res.status(400).json({ message: "Something Went Wrong" });
+        const all = await Blogs.find({ userRef: _id })
+        res.json({ all })
+    } catch (error) {
+        console.error(error);
+    }
+}
+// const singleUser = async (req, res) => {
+//     if (!req.user) {
+//       return res.status(401).json({ message: "User unauthorized" });
+//     }
+//     try {
+//       const { _id } = req.user;  // Get the user ID from req.user
+//       if (!_id) {
+//         return res.status(400).json({ message: "Something went wrong" });
+//       }
+//       // Find blogs associated with the authenticated user
+//       const all = await Blogs.find({ userRef: _id });
+//       res.json({ all });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Internal Server Error" }); // Handle errors appropriately
+//     }
+//   };
 
 
-export { addBlog }
+
+export { addBlog, singleUser }
