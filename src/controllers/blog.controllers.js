@@ -3,6 +3,8 @@
 
 import Blogs from "../models/blog.models.js"
 
+// post blog api 
+
 const addBlog = async (req, res) => {
     const { title, description, } = req.body;
     if (!title) return res.status(400).json({ message: "title is required" })
@@ -19,6 +21,7 @@ const addBlog = async (req, res) => {
     }
 }
 
+// single user all blogs api userBlogs
 const singleUser = async (req, res) => {
     if (!req.user) return res.status(401).json({ message: "user unauthorize" })
     try {
@@ -30,6 +33,36 @@ const singleUser = async (req, res) => {
         console.error(error);
     }
 }
+
+
+const allblogs = async (req, res) => {
+    try {
+        const data = await Blogs.find({})
+        res.status(200).json({ message: "All blog fetch", data })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+
+export { addBlog, singleUser, allblogs }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // const singleUser = async (req, res) => {
 //     if (!req.user) {
 //       return res.status(401).json({ message: "User unauthorized" });
@@ -47,7 +80,3 @@ const singleUser = async (req, res) => {
 //       res.status(500).json({ message: "Internal Server Error" }); // Handle errors appropriately
 //     }
 //   };
-
-
-
-export { addBlog, singleUser }

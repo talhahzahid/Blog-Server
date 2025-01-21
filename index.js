@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import connectdb from "./src/db/index.js"
+import protectRoutes from "./src/middleware/protected.middleware.js"
 dotenv.config()
 const app = express()
 const port = process.env.port
@@ -15,6 +16,9 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(urlencoded({ extended: false }))
 app.use(express.json())
+app.get('/protected', protectRoutes, (req, res) => {
+    res.json({ message: 'You have access to this protected route!', user: req.user });
+});
 app.use(cookieParser())
 app.use('/user', userRoutes)
 app.use('/api/v1', router)

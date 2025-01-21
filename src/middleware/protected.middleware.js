@@ -1,10 +1,9 @@
 
 
-// user authorization 
-import jwt from "jsonwebtoken";
-import userModels from "../models/user.models.js";
 
-export const authenticate = async (req, res, next) => {
+import jwt from "jsonwebtoken"
+import userModels from "../models/user.models.js";
+const protectRoutes = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer")) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -21,4 +20,6 @@ export const authenticate = async (req, res, next) => {
     } catch (error) {
         return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
-};
+}
+
+export default protectRoutes

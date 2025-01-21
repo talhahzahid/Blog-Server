@@ -7,7 +7,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 const generateAccessToken = (user) => {
-    return jwt.sign({ email: user.email  }, process.env.ACCESS_TOKEN,
+    return jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN,
         { expiresIn: '2m' }
     );
 };
@@ -100,6 +100,15 @@ const logOut = async (req, res) => {
         res.status(200).json({ message: "logot successfully" })
     } catch (error) {
         res.status(500).json({ message: "An error occurred" });
+    }
+}
+
+const user = async () => {
+    try {
+        const data = users.find({})
+        res.status(200).json({ meesage: "all user" }, data)
+    } catch (error) {
+        
     }
 }
 
