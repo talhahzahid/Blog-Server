@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 const connectdb = async () => {
     try {
         const connectionInstance = await mongoose.connect(
-            `${process.env.MONGO_URI}BloggingApp`
+            `${process.env.MONGO_URI}Blogs`
         );
         console.log(
             `\nMONGO DB CONNECTED SUCCESSFULLY: ${connectionInstance.connection.host}`
