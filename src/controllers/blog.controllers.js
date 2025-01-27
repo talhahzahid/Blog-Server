@@ -21,6 +21,17 @@ const addBlog = async (req, res) => {
     }
 }
 
+const deletBlog = async (req, res) => {
+    // if (req.user) return res.status(400).json({ message: "User authorize" })
+    const { id } = req.params
+    try {
+        await Blogs.findByIdAndDelete(id)
+        res.status(200).json({ message: "blog delete successfully" })
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 // single user all blogs api userBlogs
 const singleUser = async (req, res) => {
     if (!req.user) return res.status(401).json({ message: "user unauthorize" })
@@ -46,7 +57,7 @@ const allblogs = async (req, res) => {
 
 
 
-export { addBlog, singleUser, allblogs }
+export { addBlog, singleUser, allblogs, deletBlog }
 
 
 
