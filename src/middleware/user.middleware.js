@@ -6,9 +6,7 @@ import jwt from "jsonwebtoken";
 export const authenticateUser = (req, res) => {
     try {
         const refreshJwtToken = req.cookies.refreshToken;
-
         if (!refreshJwtToken) return res.status(401).json({ message: "Please log in to access this page." });
-
         // verify token 
         const user = jwt.verify(refreshJwtToken, process.env.REFRESH_JWT_SECRET);
         const newAccessToken = jwt.sign(

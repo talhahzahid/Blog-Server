@@ -1,11 +1,11 @@
 
 
 import mongoose from "mongoose";
-import Users from "../models/user.models.js"
+import users from "../models/user.models.js"
 const blogSchema = mongoose.Schema({
     userRef: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users"
+        ref: "users"
     },
     title: {
         type: String,
@@ -17,7 +17,7 @@ const blogSchema = mongoose.Schema({
     },
     like: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users"
+        ref: "users"
     }]
 }, { timestamps: true })
 

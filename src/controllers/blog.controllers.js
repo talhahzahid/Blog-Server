@@ -4,7 +4,6 @@
 import Blogs from "../models/blog.models.js"
 
 // post blog api 
-
 const addBlog = async (req, res) => {
     const { title, description, } = req.body;
     if (!title) return res.status(400).json({ message: "title is required" })
@@ -21,14 +20,31 @@ const addBlog = async (req, res) => {
     }
 }
 
+// delete blog
 const deletBlog = async (req, res) => {
-    // if (req.user) return res.status(400).json({ message: "User authorize" })
-    const { id } = req.params
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized: User not logged in" });
+    } const { id } = req.params
     try {
         await Blogs.findByIdAndDelete(id)
         res.status(200).json({ message: "blog delete successfully" })
     } catch (error) {
         console.error(error);
+    }
+}
+
+// edit blog 
+const editBlog = async (req, res) => {
+    const { title, description } = req.body
+    if (!req.user) return res.status(401).json({ message: "Unauthorized: User not logged in" });
+    const { id } = req.params
+    try {
+        await Blogs.findByIdAndUpdate(id, {
+            title, description
+        })
+        res.status(200).json({ message: "Blog update successfully" })
+    } catch (error) {
+        console.log(error)
     }
 }
 
@@ -38,26 +54,53 @@ const singleUser = async (req, res) => {
     try {
         const { _id } = req.user
         if (!_id) return res.status(400).json({ message: "Something Went Wrong" });
-        const all = await Blogs.find({ userRef: _id })
+        const all = await Blogs.find({ userRef: _id }).populate("userRef", "id  email imageUrl")
         res.json({ all })
     } catch (error) {
         console.error(error);
     }
 }
 
-
+// all user blog 
 const allblogs = async (req, res) => {
     try {
         const data = await Blogs.find({})
-        res.status(200).json({ message: "All blog fetch", data })
+            .populate("userRef", "username email imageUrl")
+            .sort({ createdAt: -1 });
+        const shortenedData = data.map(blog => {
+            return {
+                ...blog.toObject(),
+                description: blog.description.slice(0, 100) + "..."
+            };
+        });
+        res.status(200).json({
+            message: "All blogs fetched",
+            data: shortenedData
+        });
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json({ message: "Error fetching blogs" });
     }
-}
+};
+
+// single blog find
+const singleBlog = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const blog = await Blogs.findById(id);
+        if (!blog) {
+            return res.status(404).json({ message: "Blog not found" });
+        }
+        res.status(200).json({ data: blog });
+    } catch (error) {
+        console.error("Error fetching blog:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
 
 
-export { addBlog, singleUser, allblogs, deletBlog }
+export { addBlog, deletBlog, editBlog, allblogs, singleBlog, singleUser }
 
 
 
@@ -72,22 +115,3 @@ export { addBlog, singleUser, allblogs, deletBlog }
 
 
 
-
-
-// const singleUser = async (req, res) => {
-//     if (!req.user) {
-//       return res.status(401).json({ message: "User unauthorized" });
-//     }
-//     try {
-//       const { _id } = req.user;  // Get the user ID from req.user
-//       if (!_id) {
-//         return res.status(400).json({ message: "Something went wrong" });
-//       }
-//       // Find blogs associated with the authenticated user
-//       const all = await Blogs.find({ userRef: _id });
-//       res.json({ all });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ message: "Internal Server Error" }); // Handle errors appropriately
-//     }
-//   };

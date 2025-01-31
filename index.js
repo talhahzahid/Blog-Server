@@ -19,7 +19,7 @@ app.use(express.json())
 app.get('/protected', protectRoutes, (req, res) => {
     res.json({ message: 'You have access to this protected route!', user: req.user });
 });
-app.use(cookieParser())
+app.use(cookieParser()) 
 app.use('/user', userRoutes)
 app.use('/api/v1', router)
 app.get('/', (req, res) => {
