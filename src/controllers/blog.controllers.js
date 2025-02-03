@@ -1,6 +1,7 @@
 import Blogs from "../models/blog.models.js";
 import mongoose from "mongoose";
 import user from "../models/user.models.js";
+import Comment from "../models/comment.models.js";
 // post blog api
 const addBlog = async (req, res) => {
   const { title, description } = req.body;
@@ -20,40 +21,57 @@ const addBlog = async (req, res) => {
 };
 
 // like api
-
 const likePost = async (req, res) => {
   const { id } = req.params;
   const userId = req.user._id;
-
-  // Validate the blog ID format
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid blog ID format" });
   }
-
   try {
-    // Find the blog post by ID
     const blog = await Blogs.findById(id);
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
-
-    // Check if the user has already liked the post
     const userIndex = blog.like.indexOf(userId);
-
     if (userIndex !== -1) {
-      // User has already liked the post, so remove the like (dislike)
       blog.like.splice(userIndex, 1);
       await blog.save();
-      return res.status(200).json({ message: "Disliked Post", likes: blog.like.length });
+      return res
+        .status(200)
+        .json({ message: "Disliked Post", likes: blog.like.length });
     } else {
-      // User has not liked the post, so add the like
       blog.like.push(userId);
       await blog.save();
-      return res.status(200).json({ message: "Like added successfully", likes: blog.like.length });
+      return res
+        .status(200)
+        .json({ message: "Like added successfully", likes: blog.like.length });
     }
   } catch (error) {
     console.error("Error liking blog post:", error);
     res.status(500).json({ message: "Server error while liking the post" });
+  }
+};
+
+// comment api
+const userComment = async (req, res) => {
+  const { id } = req.params;
+  const { comment } = req.body;
+  const userId = req.user._id;
+  console.log(id, comment, userId);
+  try {
+    const blog = await Blogs.findById(id);
+    console.log(blog._id, "milgaya");
+    if (!blog) return res.status(400).json({ message: "blog not found" });
+    const postComment = await Comment.create({
+      comment,
+      userId,
+      blog: blog._id,
+    });
+    res
+      .status(200)
+      .json({ message: "Comment Added Successfully", postComment });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 // delete blog
@@ -152,4 +170,5 @@ export {
   singleBlog,
   singleUser,
   likePost,
+  userComment,
 };

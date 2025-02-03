@@ -7,6 +7,7 @@ import {
   likePost,
   singleBlog,
   singleUser,
+  userComment,
 } from "../controllers/blog.controllers.js";
 import { authenticate } from "../middleware/userRef.middleware.js";
 // import { authenticateUser } from "../middleware/user.middleware.js";
@@ -19,4 +20,5 @@ router.get("/all", authenticate, singleUser);
 router.get("/alluser", allblogs);
 router.get("/singleblog/:id", singleBlog);
 router.post("/like/:id", authenticate ,likePost);
+router.post("/comment/:id", authenticate ,userComment);
 export default router;
