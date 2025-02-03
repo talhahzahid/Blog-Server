@@ -70,37 +70,7 @@ const signUp = async (req, res) => {
   }
 };
 
-// signIn
-
-// const signIn = async (req, res) => {
-//   const { email, password } = req.body;
-//   if (!email) return res.status(400).json({ message: "email is required" });
-//   if (!password)
-//     return res.status(400).json({ message: "password is required" });
-//   try {
-//     const user = await users.findOne({ email });
-//     if (!user)
-//       return res
-//         .status(400)
-//         .json({ message: "no user found try to use different email" });
-//     const validPassword = await bcrypt.compare(password, user.password);
-//     if (!validPassword)
-//       return res.status(400).json({ message: "incorrect password" });
-//     const refreshToken = generateRefreshToken(user);
-//     const accessToken = generateAccessToken(user);
-//     res.cookie("refreshToken", refreshToken, {
-//       httpOnly: true,
-//       secure: true,
-//       sameSite: "None",
-//     });
-//     res
-//       .status(200)
-//       .json({ message: "login successfully", refreshToken, accessToken, user });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: "An error occurred" });
-//   }
-// };
+// sign in
 const signIn = async (req, res) => {
   const { email, password } = req.body;
   if (!email) return res.status(400).json({ message: "email is required" });
@@ -137,16 +107,7 @@ const signIn = async (req, res) => {
   }
 };
 
-// logOut
-
-// const logOut = async (req, res) => {
-//   try {
-//     res.clearCookie("refreshToken");
-//     res.status(200).json({ message: "logot successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "An error occurred" });
-//   }
-// };
+// logout
 const logOut = async (req, res) => {
   try {
     res.clearCookie("refreshToken");
