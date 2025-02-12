@@ -1,6 +1,6 @@
 import Blogs from "../models/blog.models.js";
 import mongoose from "mongoose";
-import user from "../models/user.models.js";
+import users from "../models/user.models.js";
 import Comment from "../models/comment.models.js";
 // post blog api
 const addBlog = async (req, res) => {
@@ -57,23 +57,60 @@ const userComment = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body;
   const userId = req.user._id;
-  console.log(id, comment, userId);
+
   try {
+    // Find the blog post
     const blog = await Blogs.findById(id);
-    console.log(blog._id, "milgaya");
-    if (!blog) return res.status(400).json({ message: "blog not found" });
+    if (!blog) return res.status(400).json({ message: "Blog not found" });
+
+    // Create the comment
     const postComment = await Comment.create({
       comment,
       userId,
-      blog: blog._id,
+      blogId: blog._id,
     });
+
+    // Populate the 'blogId' (for blog title) and 'userId' (for user details) fields
+    const populatedComment = await postComment.populate([
+      { path: "blogId", select: "title" }, // Populate blog title
+      { path: "userId", select: "username email" }, // Populate user name and email
+    ]);
+
     res
       .status(200)
-      .json({ message: "Comment Added Successfully", postComment });
+      .json({ message: "Comment Added Successfully", populatedComment });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const getComments = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Step 1: Blog ke liye comments dhundhna
+    const comments = await Comment.find({ blogId: id })
+      .populate([
+        { path: 'userId', select: 'username email imageUrl' }, // Populate user details
+        { path: 'blogId', select: 'title' }  // Populate blog title
+      ]);
+
+    // if (!comments || comments.length === 0) {
+    //   return res.status(400).json({ message: "No comments found for this blog" });
+    // }
+
+    // Step 2: Agar comments milte hain to unko return karo
+    return res.status(200).json({
+      message: "Comments fetched successfully",
+      comments: comments
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // delete blog
 const deletBlog = async (req, res) => {
   if (!req.user) {
@@ -171,4 +208,5 @@ export {
   singleUser,
   likePost,
   userComment,
+  getComments,
 };

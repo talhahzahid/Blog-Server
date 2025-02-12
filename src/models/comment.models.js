@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import Users from "../models/user.models.js";
+import users from "../models/user.models.js";
 import Blogs from "../models/blog.models.js";
 
 const userComment = mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Users",
+    ref: "users",
   },
   blogId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,4 +17,4 @@ const userComment = mongoose.Schema({
   },
 });
 
-export default mongoose.model("Comments" , userComment);
+export default mongoose.model("Comments", userComment);

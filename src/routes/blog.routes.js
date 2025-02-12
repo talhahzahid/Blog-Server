@@ -4,6 +4,7 @@ import {
   allblogs,
   deletBlog,
   editBlog,
+  getComments,
   likePost,
   singleBlog,
   singleUser,
@@ -21,4 +22,5 @@ router.get("/alluser", allblogs);
 router.get("/singleblog/:id", singleBlog);
 router.post("/like/:id", authenticate ,likePost);
 router.post("/comment/:id", authenticate ,userComment);
+router.get("/getcomment/:id",getComments);
 export default router;
